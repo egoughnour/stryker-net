@@ -28,7 +28,7 @@ namespace Stryker.Core.ToolHelpers
             };
         }
 
-        public string GetMsBuildPath(IProcessExecutor _processExecutor)
+        public string GetMsBuildPath(IProcessExecutor _processExecutor, string additionalVSWhereOptions = null)
         {
             if (File.Exists(@"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe"))
             {
@@ -43,6 +43,10 @@ namespace Stryker.Core.ToolHelpers
 
                     var vsWherePath = Path.Combine(visualStudioPath, "Installer", "vswhere.exe");
                     var vsWhereCommand = "-latest -requires Microsoft.Component.MSBuild -products * -find MSBuild\\**\\Bin\\MSBuild.exe";
+                    if(!string.IsNullOrWhiteSpace(additionalVSWhereOptions))
+                    {
+                        vsWhereCommand = $@"{additionalVSWhereOptions.TrimEnd()} {vsWhereCommand}";
+                    }
                     var vsWhereResult = _processExecutor.Start(visualStudioPath, vsWherePath, vsWhereCommand);
 
                     if (vsWhereResult.ExitCode == 0)
